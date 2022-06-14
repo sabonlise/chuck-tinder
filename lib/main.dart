@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'data/profile.dart';
 import 'data/tinder.dart';
+import 'data/favorites.dart';
 
 
 void main() {
@@ -37,9 +38,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   final tinder = const TinderPage(title: "Tinder with Chuck");
   final profile = const ProfilePage(title: "My profile");
+  final favorites = const FavoritesPage(title: "Favorite jokes");
 
   void _onItemTapped(int index) {
     setState(() {
@@ -54,8 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: IndexedStack(
         index: _selectedIndex,
         children: <Widget>[
+          profile,
           tinder,
-          profile
+          favorites
         ],
       ),
 
@@ -65,12 +68,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: 'my profile',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.local_fire_department),
             label: 'tinder',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'my profile',
+            icon: Icon(Icons.star_border_purple500),
+            label: 'favorites',
           ),
         ],
         selectedItemColor: Colors.pinkAccent,

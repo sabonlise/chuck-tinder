@@ -8,7 +8,6 @@ import 'package:tinder/data/profile.dart';
 
 import '/../models/joke.dart';
 
-
 class TinderPage extends StatefulWidget {
   const TinderPage({Key? key, required this.title}) : super(key: key);
 
@@ -18,12 +17,13 @@ class TinderPage extends StatefulWidget {
   State<TinderPage> createState() => Tinder();
 }
 
-
 class Tinder extends State<TinderPage> {
   String _imageUrl = "https://pbs.twimg.com/profile_images/1407346896/89.jpg";
-  String _jokeString = "Chuck Norris is the only person that can punch a cyclops between the eye.";
+  String _jokeString =
+      "Chuck Norris is the only person that can punch a cyclops between the eye.";
   int _fontSize = 26;
   int _likeCount = 0;
+  int _favCount = 0;
 
   final dio = Dio();
 
@@ -31,8 +31,7 @@ class Tinder extends State<TinderPage> {
     Response response;
 
     if (chosenCategory == 'any') {
-      response = await dio.get(
-          "https://api.chucknorris.io/jokes/random");
+      response = await dio.get("https://api.chucknorris.io/jokes/random");
     } else {
       response = await dio.get(
           "https://api.chucknorris.io/jokes/random?category=$chosenCategory");
@@ -43,10 +42,16 @@ class Tinder extends State<TinderPage> {
 
   Future<String> getImageFromText(String? text) async {
     dio.options.headers["api-key"] = "c9b23ba8-68d9-4a35-b219-31d929a01bd5";
-    final response = await dio.post(
-        "https://api.deepai.org/api/text2img", data: {"text": text});
+    final response = await dio
+        .post("https://api.deepai.org/api/text2img", data: {"text": text});
     final imageMap = jsonDecode(response.toString());
     return imageMap["output_url"] as String;
+  }
+
+  Future<bool> _addFav(bool isLiked) async {
+    isLiked ? --_favCount : ++_favCount;
+
+    return !isLiked;
   }
 
   Future<bool> _setJoke(bool isLiked) async {
@@ -56,7 +61,6 @@ class Tinder extends State<TinderPage> {
     getImageFromText(jokeString).then((url) {
       Future.delayed(const Duration(milliseconds: 600), () {
         setState(() {
-
           if (joke.value.length > 1 && joke.value.length < 80) {
             _fontSize = 30;
           } else if (joke.value.length > 80 && joke.value.length < 130) {
@@ -71,7 +75,6 @@ class Tinder extends State<TinderPage> {
 
           _imageUrl = url;
           _jokeString = jokeString;
-
         });
       });
     });
@@ -90,8 +93,7 @@ class Tinder extends State<TinderPage> {
               fontFamily: 'VK Sans',
               fontSize: 22,
               fontStyle: FontStyle.normal,
-            )
-        ),
+            )),
         centerTitle: true,
       ),
 
@@ -101,13 +103,12 @@ class Tinder extends State<TinderPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                width: MediaQuery.of(context).size.width - 20,
-                height: MediaQuery.of(context).size.height - 265,
+                width: MediaQuery.of(context).size.width * 0.9,
+                height: MediaQuery.of(context).size.height * 0.6,
                 child: Card(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-
                       DropShadowImage(
                         borderRadius: 10,
                         blurRadius: 10,
@@ -115,8 +116,8 @@ class Tinder extends State<TinderPage> {
                         scale: 1,
                         image: Image.network(
                           _imageUrl,
-                          width: 300,
-                          height: 300,
+                          width: MediaQuery.of(context).size.width * 0.75,
+                          height: MediaQuery.of(context).size.height * 0.35,
                           loadingBuilder: (BuildContext context, Widget child,
                               ImageChunkEvent? loadingProgress) {
                             if (loadingProgress == null) {
@@ -125,9 +126,9 @@ class Tinder extends State<TinderPage> {
                             return Center(
                               child: CircularProgressIndicator(
                                 value: loadingProgress.expectedTotalBytes !=
-                                    null
+                                        null
                                     ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
+                                        loadingProgress.expectedTotalBytes!
                                     : null,
                               ),
                             );
@@ -135,7 +136,8 @@ class Tinder extends State<TinderPage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(8, 20, 8, 0),
+                        padding:
+                            const EdgeInsetsDirectional.fromSTEB(8, 20, 8, 0),
                         child: Text(
                           _jokeString,
                           textAlign: TextAlign.center,
@@ -152,23 +154,64 @@ class Tinder extends State<TinderPage> {
               ),
               Padding(
                 padding: const EdgeInsets.all(10),
-                child: LikeButton(
-                  onTap: _setJoke,
-                  size: 75,
-                  likeCount: 0,
-                  countPostion: CountPostion.bottom,
-                  countBuilder: (int? count, bool isLiked, String text) {
-                    return Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Text(
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.blueGrey,
-                            fontStyle: FontStyle.normal,
+                child: Center(
+                  child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        LikeButton(
+                            onTap: _setJoke,
+                            size: 75,
+                            likeCount: 0,
+                            countPostion: CountPostion.bottom,
+                            countBuilder:
+                                (int? count, bool isLiked, String text) {
+                              return Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Text(
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.blueGrey,
+                                      fontStyle: FontStyle.normal,
+                                    ),
+                                    "$_likeCount"),
+                              );
+                            }),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: MediaQuery.of(context).size.width * 0.15,
                           ),
-                          "you liked $_likeCount jokes already, $name =)"),
-                    );
-                  }
+                          child: LikeButton(
+                              onTap: _addFav,
+                              likeCount: 0,
+                              countPostion: CountPostion.bottom,
+                              size: 75,
+                              bubblesColor: const BubblesColor(
+                                dotPrimaryColor: Color(0xfff5bf42),
+                                dotSecondaryColor: Color(0xffcce046),
+                              ),
+                              likeBuilder: (bool isLiked) {
+                                return Icon(
+                                  Icons.star,
+                                  size: 75,
+                                  color: isLiked ? Colors.yellow : Colors.grey,
+                                );
+                              },
+                              countBuilder:
+                                  (int? count, bool isLiked, String text) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Text(
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.blueGrey,
+                                        fontStyle: FontStyle.normal,
+                                      ),
+                                      "$_favCount"),
+                                );
+                              }),
+                        )
+                      ]),
                 ),
               ),
             ],

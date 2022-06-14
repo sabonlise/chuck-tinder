@@ -38,11 +38,7 @@ class Profile extends State<ProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title,
-            style: const TextStyle(
-              fontFamily: 'VK Sans',
-              fontSize: 22,
-              fontStyle: FontStyle.normal,
-            )
+            style: textStyle,
         ),
         centerTitle: true,
       ),
