@@ -18,9 +18,11 @@ class TinderPage extends StatefulWidget {
 }
 
 class Tinder extends State<TinderPage> {
-  String _imageUrl = "https://pbs.twimg.com/profile_images/1407346896/89.jpg";
-  String _jokeString =
-      "Chuck Norris is the only person that can punch a cyclops between the eye.";
+  Joke currentJoke = Joke(
+      "Chuck Norris is the only person that can punch a cyclops between the eye.",
+      "",
+      "https://pbs.twimg.com/profile_images/1407346896/89.jpg");
+
   int _fontSize = 26;
   int _likeCount = 0;
   int _favCount = 0;
@@ -37,7 +39,11 @@ class Tinder extends State<TinderPage> {
           "https://api.chucknorris.io/jokes/random?category=$chosenCategory");
     }
 
-    return Joke.fromJson(response.data);
+    var parsed = Map<String, dynamic>.from(response.data);
+    var imageUrl = await getImageFromText(parsed["value"]);
+    parsed["image"] = imageUrl;
+
+    return Joke.fromJson(parsed);
   }
 
   Future<String> getImageFromText(String? text) async {
@@ -55,10 +61,7 @@ class Tinder extends State<TinderPage> {
   }
 
   Future<bool> _setJoke(bool isLiked) async {
-    final joke = await fetchJoke();
-    String jokeString = joke.value;
-
-    getImageFromText(jokeString).then((url) {
+    fetchJoke().then((joke) {
       Future.delayed(const Duration(milliseconds: 600), () {
         setState(() {
           if (joke.value.length > 1 && joke.value.length < 80) {
@@ -73,8 +76,7 @@ class Tinder extends State<TinderPage> {
             _fontSize = 18;
           }
 
-          _imageUrl = url;
-          _jokeString = jokeString;
+          currentJoke = joke;
         });
       });
     });
@@ -96,7 +98,6 @@ class Tinder extends State<TinderPage> {
             )),
         centerTitle: true,
       ),
-
       body: SafeArea(
         child: Center(
           child: Column(
@@ -115,7 +116,7 @@ class Tinder extends State<TinderPage> {
                         offset: const Offset(5, 5),
                         scale: 1,
                         image: Image.network(
-                          _imageUrl,
+                          currentJoke.image,
                           width: MediaQuery.of(context).size.width * 0.75,
                           height: MediaQuery.of(context).size.height * 0.35,
                           loadingBuilder: (BuildContext context, Widget child,
@@ -139,7 +140,7 @@ class Tinder extends State<TinderPage> {
                         padding:
                             const EdgeInsetsDirectional.fromSTEB(8, 20, 8, 0),
                         child: Text(
-                          _jokeString,
+                          currentJoke.value,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'VK Sans',
@@ -179,7 +180,7 @@ class Tinder extends State<TinderPage> {
                             }),
                         Padding(
                           padding: EdgeInsets.only(
-                              left: MediaQuery.of(context).size.width * 0.15,
+                            left: MediaQuery.of(context).size.width * 0.15,
                           ),
                           child: LikeButton(
                               onTap: _addFav,
@@ -218,7 +219,6 @@ class Tinder extends State<TinderPage> {
           ),
         ),
       ),
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
