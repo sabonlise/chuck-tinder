@@ -1,33 +1,55 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:like_button/like_button.dart';
-import 'package:drop_shadow_image/drop_shadow_image.dart';
+import '../models/joke.dart';
 
-class FavoritesPage extends StatefulWidget {
-  const FavoritesPage({Key? key, required this.title}) : super(key: key);
+class FavoritesPage extends StatelessWidget {
+  const FavoritesPage({Key? key, required this.title, required this.jokes})
+      : super(key: key);
 
   final String title;
+  final List<Joke> jokes;
 
-  @override
-  State<FavoritesPage> createState() => Favorites();
-}
-
-class Favorites extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title,
-            style: const TextStyle(
-              fontFamily: 'VK Sans',
-              fontSize: 22,
-              fontStyle: FontStyle.normal,
-            )),
-        centerTitle: true,
-      ),
-      body: const Text("123"),
-    );
+    if (jokes.isEmpty) {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(title,
+                style: const TextStyle(
+                  fontFamily: 'VK Sans',
+                  fontSize: 22,
+                  fontStyle: FontStyle.normal,
+                )),
+            centerTitle: true,
+          ),
+          body: const Center(
+            child: Text("You don't have any favorite jokes yet",
+                style: TextStyle(
+                  fontFamily: 'VK Sans',
+                  fontSize: 22,
+                  fontStyle: FontStyle.normal,
+                )),
+          ));
+    } else {
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(title,
+                style: const TextStyle(
+                  fontFamily: 'VK Sans',
+                  fontSize: 22,
+                  fontStyle: FontStyle.normal,
+                )),
+            centerTitle: true,
+          ),
+          body: ListView.builder(
+              itemCount: jokes.length,
+              itemBuilder: (context, index) {
+                return Card(
+                    child: ListTile(
+                        title: Text(jokes[index].value),
+                        leading: CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(jokes[index].image))));
+              }));
+    }
   }
 }

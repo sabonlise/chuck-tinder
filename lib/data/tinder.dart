@@ -8,6 +8,8 @@ import 'package:tinder/data/profile.dart';
 
 import '/../models/joke.dart';
 
+List<Joke> jokes = [];
+
 class TinderPage extends StatefulWidget {
   const TinderPage({Key? key, required this.title}) : super(key: key);
 
@@ -55,7 +57,13 @@ class Tinder extends State<TinderPage> {
   }
 
   Future<bool> _addFav(bool isLiked) async {
-    isLiked ? --_favCount : ++_favCount;
+    if (isLiked) {
+      --_favCount;
+      jokes.removeLast();
+    } else {
+      ++_favCount;
+      jokes.add(currentJoke);
+    }
 
     return !isLiked;
   }

@@ -4,6 +4,7 @@ import 'data/profile.dart';
 import 'data/tinder.dart';
 import 'data/favorites.dart';
 
+import '../models/joke.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,15 +15,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     return MaterialApp(
-       title: 'Tinder with Chuck',
-       theme: ThemeData(
-         primarySwatch: Colors.pink,
-         fontFamily: 'VK Sans',
-       ),
-
-       home: const MyHomePage(title: 'Tinder with Chuck'),
-       debugShowCheckedModeBanner: false,
+    return MaterialApp(
+      title: 'Tinder with Chuck',
+      theme: ThemeData(
+        primarySwatch: Colors.pink,
+        fontFamily: 'VK Sans',
+      ),
+      home: const MyHomePage(title: 'Tinder with Chuck'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -37,35 +37,30 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   int _selectedIndex = 1;
   final tinder = const TinderPage(title: "Tinder with Chuck");
   final profile = const ProfilePage(title: "My profile");
-  final favorites = const FavoritesPage(title: "Favorite jokes");
+  var favorites = FavoritesPage(title: "Favorite jokes", jokes: jokes);
 
   void _onItemTapped(int index) {
     setState(() {
+      if (index == 2) {
+        favorites = FavoritesPage(title: "Favorite jokes", jokes: jokes);
+      }
       _selectedIndex = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
-        children: <Widget>[
-          profile,
-          tinder,
-          favorites
-        ],
+        children: <Widget>[profile, tinder, favorites],
       ),
-
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _selectedIndex,
-
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
@@ -81,9 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         selectedItemColor: Colors.pinkAccent,
+        selectedIconTheme:
+            const IconThemeData(color: Colors.pinkAccent, size: 30),
         onTap: _onItemTapped,
       ),
     );
   }
 }
-
