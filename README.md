@@ -10,7 +10,7 @@ Tinder with the only like button, because you can't dislike Chuck Norris
   <img src="https://user-images.githubusercontent.com/46754745/173916159-fa13c7a0-3122-4aae-903d-ae8e8b338a8c.png" width="360" height="720">
 
 </p>
-2. Save favorite jokes and delete them at any time
+2. Save favorite jokes and delete/hide them at any time
 
 - <p float="left">
   <img src="https://user-images.githubusercontent.com/46754745/173917026-4691413a-6370-492c-ad0c-4f74c6891989.png" width="360" height="720">
@@ -22,7 +22,7 @@ Tinder with the only like button, because you can't dislike Chuck Norris
 
 </p>
 
-4. Subscribe to a certain category of Chuck Norris jokes
+3. Subscribe to a certain category of Chuck Norris jokes
 
 - <p float="left">
   <img src="https://user-images.githubusercontent.com/46754745/173916374-1f97ea72-2c82-4c94-b171-84be24ecdd91.png" width="360" height="720">
