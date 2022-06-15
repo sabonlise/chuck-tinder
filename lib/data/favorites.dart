@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/joke.dart';
 
-class FavoritesPage extends StatelessWidget {
+class FavoritesPage extends StatefulWidget {
   const FavoritesPage({Key? key, required this.title, required this.jokes})
       : super(key: key);
 
@@ -9,46 +9,97 @@ class FavoritesPage extends StatelessWidget {
   final List<Joke> jokes;
 
   @override
+  State<FavoritesPage> createState() => Favorites();
+}
+
+class Favorites extends State<FavoritesPage> {
+  @override
   Widget build(BuildContext context) {
-    if (jokes.isEmpty) {
+    if (widget.jokes.isEmpty) {
       return Scaffold(
           appBar: AppBar(
-            title: Text(title,
-                style: const TextStyle(
-                  fontFamily: 'VK Sans',
-                  fontSize: 22,
-                  fontStyle: FontStyle.normal,
-                )),
+            title: Text(widget.title,
+                style: Theme.of(context).textTheme.headline2),
             centerTitle: true,
           ),
-          body: const Center(
-            child: Text("You don't have any favorite jokes yet",
-                style: TextStyle(
-                  fontFamily: 'VK Sans',
-                  fontSize: 22,
-                  fontStyle: FontStyle.normal,
-                )),
-          ));
+          body: Center(
+              child: Padding(
+            padding: const EdgeInsets.all(35),
+            child: Text(
+              "You don't have any favorite jokes yet",
+              style: Theme.of(context).textTheme.headline3,
+              textAlign: TextAlign.center,
+            ),
+          )));
     } else {
       return Scaffold(
           appBar: AppBar(
-            title: Text(title,
-                style: const TextStyle(
-                  fontFamily: 'VK Sans',
-                  fontSize: 22,
-                  fontStyle: FontStyle.normal,
-                )),
+            title: Text(widget.title,
+                style: Theme.of(context).textTheme.headline1),
             centerTitle: true,
           ),
           body: ListView.builder(
-              itemCount: jokes.length,
+              itemCount: widget.jokes.length,
               itemBuilder: (context, index) {
-                return Card(
-                    child: ListTile(
-                        title: Text(jokes[index].value),
-                        leading: CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(jokes[index].image))));
+                final joke = widget.jokes[index];
+                return Dismissible(
+                  key: UniqueKey(),
+                  onDismissed: (direction) {
+                    if (direction == DismissDirection.endToStart) {
+                      setState(() {
+                        widget.jokes.removeAt(index);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "Joke with Chuck Norris"
+                              " was not deleted.\nChuck Norris deleted you",
+                              style: Theme.of(context).textTheme.headline6)));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "You can't hide from"
+                              " Chuck Norris",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline6
+                                  ?.apply(fontStyle: FontStyle.italic))));
+                    }
+                  },
+                  background: Container(
+                      color: Colors.lightGreen,
+                      child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Row(
+                            children: const [
+                              Icon(Icons.hide_source, color: Colors.black),
+                              Text('Hide joke')
+                            ],
+                          ))),
+                  secondaryBackground: Container(
+                    color: Colors.red,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: const [
+                          Icon(Icons.delete_forever_rounded,
+                              color: Colors.white),
+                          Text('Delete joke',
+                              style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  child: Card(
+                      child: ListTile(
+                          title: Text(
+                            joke.value,
+                            style: Theme.of(context).textTheme.headline4,
+                          ),
+                          leading: CircleAvatar(
+                              backgroundImage: NetworkImage(joke.image),
+                              radius: 40))),
+                );
               }));
     }
   }

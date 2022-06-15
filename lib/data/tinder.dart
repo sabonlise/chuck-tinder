@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:like_button/like_button.dart';
@@ -25,71 +26,71 @@ class Tinder extends State<TinderPage> {
       "",
       "https://pbs.twimg.com/profile_images/1407346896/89.jpg");
 
-  int _fontSize = 26;
-  int _likeCount = 0;
-  int _favCount = 0;
+  double _fontSizeFactor = 1;
 
   final dio = Dio();
 
   Future<Joke> fetchJoke() async {
     Response response;
+    try {
+      if (chosenCategory == 'any') {
+        response = await dio.get("https://api.chucknorris.io/jokes/random");
+      } else {
+        response = await dio.get(
+            "https://api.chucknorris.io/jokes/random?category=$chosenCategory");
+      }
+      var parsed = Map<String, dynamic>.from(response.data);
+      var imageUrl = await getImageFromText(parsed["value"]);
+      parsed["image"] = imageUrl;
 
-    if (chosenCategory == 'any') {
-      response = await dio.get("https://api.chucknorris.io/jokes/random");
-    } else {
-      response = await dio.get(
-          "https://api.chucknorris.io/jokes/random?category=$chosenCategory");
+      return Joke.fromJson(parsed);
+    } catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+
+      return currentJoke;
     }
-
-    var parsed = Map<String, dynamic>.from(response.data);
-    var imageUrl = await getImageFromText(parsed["value"]);
-    parsed["image"] = imageUrl;
-
-    return Joke.fromJson(parsed);
   }
 
   Future<String> getImageFromText(String? text) async {
-    dio.options.headers["api-key"] = "c9b23ba8-68d9-4a35-b219-31d929a01bd5";
-    final response = await dio
-        .post("https://api.deepai.org/api/text2img", data: {"text": text});
-    final imageMap = jsonDecode(response.toString());
-    return imageMap["output_url"] as String;
+    try {
+      dio.options.headers["api-key"] = "c9b23ba8-68d9-4a35-b219-31d929a01bd5";
+      final response = await dio
+          .post("https://api.deepai.org/api/text2img", data: {"text": text});
+      final imageMap = jsonDecode(response.toString());
+      return imageMap["output_url"] as String;
+    } catch (error, stackTrace) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+
+      return currentJoke.image;
+    }
   }
 
   Future<bool> _addFav(bool isLiked) async {
-    if (isLiked) {
-      --_favCount;
-      jokes.removeLast();
-    } else {
-      ++_favCount;
-      jokes.add(currentJoke);
-    }
+    isLiked ? jokes.remove(currentJoke) : jokes.add(currentJoke);
 
     return !isLiked;
   }
 
   Future<bool> _setJoke(bool isLiked) async {
     fetchJoke().then((joke) {
-      Future.delayed(const Duration(milliseconds: 600), () {
+      Future.delayed(const Duration(milliseconds: 200), () {
         setState(() {
           if (joke.value.length > 1 && joke.value.length < 80) {
-            _fontSize = 30;
+            _fontSizeFactor = 1.15;
           } else if (joke.value.length > 80 && joke.value.length < 130) {
-            _fontSize = 26;
+            _fontSizeFactor = 1;
           } else if (joke.value.length > 130 && joke.value.length < 160) {
-            _fontSize = 24;
+            _fontSizeFactor = 0.92;
           } else if (joke.value.length > 160 && joke.value.length < 200) {
-            _fontSize = 21;
+            _fontSizeFactor = 0.8;
           } else if (joke.value.length > 200) {
-            _fontSize = 18;
+            _fontSizeFactor = 0.69;
           }
 
           currentJoke = joke;
         });
       });
     });
-
-    ++_likeCount;
 
     return !isLiked;
   }
@@ -98,12 +99,7 @@ class Tinder extends State<TinderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title,
-            style: const TextStyle(
-              fontFamily: 'VK Sans',
-              fontSize: 22,
-              fontStyle: FontStyle.normal,
-            )),
+        title: Text(widget.title, style: Theme.of(context).textTheme.headline2),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -150,11 +146,10 @@ class Tinder extends State<TinderPage> {
                         child: Text(
                           currentJoke.value,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'VK Sans',
-                            fontSize: _fontSize.toDouble(),
-                            color: Colors.grey,
-                          ),
+                          style: Theme.of(context).textTheme.headline3?.apply(
+                                color: Colors.grey,
+                                fontSizeFactor: _fontSizeFactor,
+                              ),
                         ),
                       ),
                     ],
@@ -171,54 +166,27 @@ class Tinder extends State<TinderPage> {
                         LikeButton(
                             onTap: _setJoke,
                             size: 75,
-                            likeCount: 0,
-                            countPostion: CountPostion.bottom,
-                            countBuilder:
-                                (int? count, bool isLiked, String text) {
-                              return Padding(
-                                padding: const EdgeInsets.all(5),
-                                child: Text(
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.blueGrey,
-                                      fontStyle: FontStyle.normal,
-                                    ),
-                                    "$_likeCount"),
-                              );
-                            }),
+                            countPostion: CountPostion.bottom),
                         Padding(
                           padding: EdgeInsets.only(
                             left: MediaQuery.of(context).size.width * 0.15,
                           ),
                           child: LikeButton(
-                              onTap: _addFav,
-                              likeCount: 0,
-                              countPostion: CountPostion.bottom,
-                              size: 75,
-                              bubblesColor: const BubblesColor(
-                                dotPrimaryColor: Color(0xfff5bf42),
-                                dotSecondaryColor: Color(0xffcce046),
-                              ),
-                              likeBuilder: (bool isLiked) {
-                                return Icon(
-                                  Icons.star,
-                                  size: 75,
-                                  color: isLiked ? Colors.yellow : Colors.grey,
-                                );
-                              },
-                              countBuilder:
-                                  (int? count, bool isLiked, String text) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: Text(
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.blueGrey,
-                                        fontStyle: FontStyle.normal,
-                                      ),
-                                      "$_favCount"),
-                                );
-                              }),
+                            onTap: _addFav,
+                            countPostion: CountPostion.bottom,
+                            size: 75,
+                            bubblesColor: const BubblesColor(
+                              dotPrimaryColor: Color(0xfff5bf42),
+                              dotSecondaryColor: Color(0xffcce046),
+                            ),
+                            likeBuilder: (bool isLiked) {
+                              return Icon(
+                                Icons.star,
+                                size: 75,
+                                color: isLiked ? Colors.yellow : Colors.grey,
+                              );
+                            },
+                          ),
                         )
                       ]),
                 ),

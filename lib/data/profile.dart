@@ -35,12 +35,6 @@ class Profile extends State<ProfilePage> {
     'travel'
   ];
 
-  static const textStyle = TextStyle(
-    fontFamily: 'VK Sans',
-    fontSize: 22,
-    fontStyle: FontStyle.normal,
-  );
-
   void _setText() {
     setState(() {
       name = text!;
@@ -53,7 +47,7 @@ class Profile extends State<ProfilePage> {
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: textStyle,
+          style: Theme.of(context).textTheme.headline2,
         ),
         centerTitle: true,
       ),
@@ -62,7 +56,7 @@ class Profile extends State<ProfilePage> {
         Padding(
           padding: const EdgeInsets.all(15),
           child: TextField(
-            style: textStyle,
+            style: Theme.of(context).textTheme.headline3,
             decoration: const InputDecoration(
               hintText: 'Oleg',
               labelText: 'Your name',
@@ -86,7 +80,7 @@ class Profile extends State<ProfilePage> {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(
-                style: textStyle,
+                style: Theme.of(context).textTheme.headline3,
                 value,
               ),
             );
@@ -99,7 +93,12 @@ class Profile extends State<ProfilePage> {
             width: 120,
             child: ElevatedButton(
               onPressed: _setText,
-              child: Text(style: textStyle, 'Save'),
+              child: Text(
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline3
+                      ?.apply(color: Colors.white),
+                  'Save'),
             ),
           ),
         ),

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "587491736056",
+    "project_id": "tinder-chuck",
+    "storage_bucket": "tinder-chuck.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587491736056:android:248e1eba103f1497b4fe0d",
+        "android_client_info": {
+          "package_name": "com.example.tinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "587491736056-8sl4k5hlk5g170murt51ha4pnlilsf1r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY_Zb5P_X-xvaI2fbJKyRsnAzeuoVGfwo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "587491736056-8sl4k5hlk5g170murt51ha4pnlilsf1r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

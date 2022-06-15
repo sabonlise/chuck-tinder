@@ -1,12 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'data/profile.dart';
 import 'data/tinder.dart';
 import 'data/favorites.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import '../models/joke.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  await Firebase.initializeApp();
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
   runApp(const MyApp());
 }
 
@@ -16,10 +24,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tinder with Chuck',
       theme: ThemeData(
         primarySwatch: Colors.pink,
         fontFamily: 'VK Sans',
+        textTheme: const TextTheme(
+          headline1: TextStyle(
+              fontSize: 30.0,
+              fontWeight: FontWeight.normal,
+              color: Colors.white),
+          headline2: TextStyle(
+              fontSize: 28.0,
+              fontWeight: FontWeight.normal,
+              color: Colors.white),
+          headline3: TextStyle(
+              fontSize: 26.0,
+              fontWeight: FontWeight.normal,
+              color: Colors.black),
+          headline4: TextStyle(
+            fontSize: 22.0,
+            fontWeight: FontWeight.normal,
+            color: Colors.black87,
+          ),
+          headline6: TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.normal,
+            color: Colors.white,
+          ),
+        ),
       ),
       home: const MyHomePage(title: 'Tinder with Chuck'),
       debugShowCheckedModeBanner: false,
@@ -47,6 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (index == 2) {
         favorites = FavoritesPage(title: "Favorite jokes", jokes: jokes);
       }
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       _selectedIndex = index;
     });
   }
