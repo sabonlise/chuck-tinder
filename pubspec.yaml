@@ -55,6 +55,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   flutter_svg: ^1.1.0
+  flutter_launcher_icons: ^0.9.2
 
   json_serializable: ^6.0.0
   build_runner: ^1.8.1
@@ -85,7 +86,10 @@ flutter:
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
-
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/chuck.png"
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
 

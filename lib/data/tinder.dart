@@ -113,7 +113,7 @@ class Tinder extends State<TinderPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(hasInternetConnection);
+
     if (!hasInternetConnection) {
       return Scaffold(
           appBar: AppBar(
