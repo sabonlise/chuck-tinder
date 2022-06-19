@@ -27,3 +27,6 @@ Tinder with the only like button, because you can't dislike Chuck Norris
 - <p float="left">
   <img src="https://user-images.githubusercontent.com/46754745/173916374-1f97ea72-2c82-4c94-b171-84be24ecdd91.png" width="360" height="720">
 </p>
+
+## Download
+You can find .apk [here](https://drive.google.com/file/d/1VzcfTVr201TEKWrY4rKyb01DmPzUxlJT/view?usp=sharing)
